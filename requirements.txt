@@ -4,3 +4,4 @@ torch
 sentencepiece
 requests
 beautifulsoup4
+summa
