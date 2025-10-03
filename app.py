@@ -9,13 +9,13 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load model
 vit5_pretrained = "VietAI/vit5-base-vietnews-summarization"
-model_finetuned_path = "Vit5_finetuned/checkpoint-1629"
+model_finetuned_path = "nguyenduc05/ViT5_finetuned"
 
-# tokenizer_vit5 = AutoTokenizer.from_pretrained(vit5_pretrained)
-# model_vit5 = AutoModelForSeq2SeqLM.from_pretrained(vit5_pretrained)
-#
-# tokenizer_ft = AutoTokenizer.from_pretrained(model_finetuned_path)
-# model_ft = AutoModelForSeq2SeqLM.from_pretrained(model_finetuned_path)
+tokenizer_vit5 = AutoTokenizer.from_pretrained(vit5_pretrained)
+model_vit5 = AutoModelForSeq2SeqLM.from_pretrained(vit5_pretrained)
+
+tokenizer_ft = AutoTokenizer.from_pretrained(model_finetuned_path)
+model_ft = AutoModelForSeq2SeqLM.from_pretrained(model_finetuned_path)
 
 # Crawl data
 def extract_text_from_url(url):
@@ -35,7 +35,7 @@ def summarize_vit5(text, tokenizer, model, num_sent=3):
         max_length=50 * num_sent,
         num_beams=4,
         early_stopping=True
-    ).to(device)
+    )
     return tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
 # Streamlit UI
@@ -70,10 +70,10 @@ if st.button("🚀 Tóm tắt ngay"):
             summary = textrank_summarizer.summarize(text_input, ratio=num_sent * 0.1)
             if not summary:
                 summary = "❌ TextRank không tạo được tóm tắt (text quá ngắn)."
-        # elif model_choice == "ViT5 (pretrained)":
-        #     summary = summarize_vit5(text_input, tokenizer_vit5, model_vit5, num_sent)
-        # elif model_choice == "ViT5 (fine-tuned)":
-        #     summary = summarize_vit5(text_input, tokenizer_ft, model_ft, num_sent)
+        elif model_choice == "ViT5 (pretrained)":
+            summary = summarize_vit5(text_input, tokenizer_vit5, model_vit5, num_sent)
+        elif model_choice == "ViT5 (fine-tuned)":
+            summary = summarize_vit5(text_input, tokenizer_ft, model_ft, num_sent)
         else:
             summary = "❌ Model chưa hỗ trợ."
 
